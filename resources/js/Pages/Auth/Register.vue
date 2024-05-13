@@ -7,16 +7,34 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
-    name: '',
+    first_name: '',
+    last_name: '',
+    middle_name: '',
+    phone_number: '',
     email: '',
     password: '',
     password_confirmation: '',
 });
 
+var profile_img = null;
+
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(form)) {
+        formData.append(key, value);
+    }
+    
+    formData.append('profile_img', profile_img, profile_img.name);
+
+    form.post(route('register'), formData, {
+        onFinish: () => {
+            form.reset('password', 'password_confirmation');
+        },
     });
+};
+
+const onFileChange = (event) => {
+    profile_img = event.target.files[0] || null;
 };
 </script>
 
@@ -24,22 +42,85 @@ const submit = () => {
     <GuestLayout>
         <Head title="Register" />
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" enctype="multipart/form-data">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="firstName" value="First Name" />
 
                 <TextInput
-                    id="name"
+                    id="firstName"
                     type="text"
                     class="mt-1 block w-full"
-                    v-model="form.name"
+                    v-model="form.first_name"
                     required
                     autofocus
-                    autocomplete="name"
+                    autocomplete="first name"
                 />
 
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="mt-2" :message="form.errors.first_name" />
             </div>
+
+            <div class="mt-4">
+                <InputLabel for="lastName" value="Last Name" />
+
+                <TextInput
+                    id="lastName"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.last_name"
+                    required
+                    autofocus
+                    autocomplete="last name"
+                />
+
+                <InputError class="mt-2" :message="form.errors.last_name" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="middleName" value="Middle Name" />
+
+                <TextInput
+                    id="middleName"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.middle_name"
+                    required
+                    autofocus
+                    autocomplete="middle name"
+                />
+
+                <InputError class="mt-2" :message="form.errors.middle_name" />
+            </div> 
+
+            <div class="mt-4">
+                <InputLabel for="phoneNumber" value="Phone Number" />
+
+                <TextInput
+                    id="phoneNumber"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.phone_number"
+                    required
+                    autofocus
+                    autocomplete="phone number"
+                />
+
+                <InputError class="mt-2" :message="form.errors.phone_number" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="profileImg" value="Profile Image" />
+
+                <input 
+                    type="file" 
+                    name="profile_img" 
+                    id="profileImg" 
+                    @change="onFileChange" 
+                    accept="image/*"
+                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                >
+
+                <InputError class="mt-2" :message="form.errors.profile_img" />
+            </div> 
 
             <div class="mt-4">
                 <InputLabel for="email" value="Email" />
